@@ -7,9 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 
-os.environ["SERVER_URL_FF"] = os.getenv("SERVER_URL_FF", "http://localhost:8080/api/v1/mcp")
 os.environ["PORT"] = os.getenv("PORT", "8000")
 
+
+URL = os.getenv("SERVER_URL_FF","http://localhost:8080/api/v1/mcp") 
+os.environ["SERVER_URL_FF"] = URL + "/api/v1/mcp"
 
 async def get_user_profile_tool(access_token: str):
 
