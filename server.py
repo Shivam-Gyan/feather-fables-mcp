@@ -12,6 +12,9 @@ from schemas.user.profile import UpdateProfileInput, UpdateProfileOutput
 load_dotenv()
 import os
 
+os.environ["SERVER_URL_FF"] = os.getenv("SERVER_URL_FF", "http://localhost:8080/api/v1/mcp")
+os.environ["PORT"] = os.getenv("PORT", "8000")
+
 app = FastMCP(name="feather-fables-mcp", version="0.1.0")
 
 
@@ -106,4 +109,4 @@ async def accept_search_blogs_tool(input: SearchBlogsInput, access_token: str) -
 
 
 if __name__ == "__main__":
-    app.run(transport="http", host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
+    app.run(transport="http", host="0.0.0.0", port=os.getenv("PORT", 8000))
