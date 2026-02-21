@@ -23,5 +23,5 @@ def get_env_variable(name: str) -> str:
     # Normalize common duplication mistakes and trailing slashes so callers
     # that append endpoint paths don't accidentally produce duplicate segments.
     # Example: http://host/api/v1/mcp/api/v1/mcp -> http://host/api/v1/mcp
-    value= 'http://localhost:8080/api/v1/mcp'
+    value= 'http://192.168.1.39:8080/api/v1/mcp'
     return value
