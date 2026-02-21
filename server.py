@@ -1,6 +1,5 @@
 from fastmcp import FastMCP
 from dotenv import load_dotenv
-import mcp
 from Tools.get_blog import get_blog
 from Tools.blog_tools import save_to_draft_tool, user_written_blogs_tool, get_blog_by_id_tool, search_blogs_tool
 from Tools.user_tools import get_user_profile_tool, update_profile_tool, check_notification_tool
@@ -11,7 +10,7 @@ from schemas.blog.search_blogs import SearchBlogsInput, SearchBlogsOutput
 from schemas.user.profile import UpdateProfileInput, UpdateProfileOutput
 
 load_dotenv()
-
+import os
 
 app = FastMCP(name="feather-fables-mcp", version="0.1.0")
 
@@ -107,4 +106,4 @@ async def accept_search_blogs_tool(input: SearchBlogsInput, access_token: str) -
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(transport="http", host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
