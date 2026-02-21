@@ -14,8 +14,7 @@ import os
 
 os.environ["PORT"] = os.getenv("PORT", "8000")
 
-URL = os.getenv("SERVER_URL_FF","http://localhost:8080") 
-os.environ["SERVER_URL_FF"] = URL + "/api/v1/mcp"
+os.environ["SERVER_URL_FF"] = os.getenv("SERVER_URL_FF","http://localhost:8080/api/v1/mcp") 
 
 
 app = FastMCP(name="feather-fables-mcp", version="0.1.0")
