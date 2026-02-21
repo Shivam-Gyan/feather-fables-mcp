@@ -13,6 +13,8 @@ for further editing and eventual publication by the human team at Feather Fables
 from config.environment import get_env_variable
 from schemas.blog.draft import SaveDraftInput, SaveDraftOutput
 from schemas.blog.user_written_blogs import UserWrittenBlogsInput, UserWrittenBlogsOutput, BlogDocument
+from schemas.blog.get_blog_by_id import GetBlogByIdInput, GetBlogByIdOutput
+from schemas.blog.search_blogs import SearchBlogsInput, SearchBlogsOutput, SearchBlogItem
 from request.http import post
 
 
@@ -104,3 +106,97 @@ async def user_written_blogs_tool(input: UserWrittenBlogsInput, access_token: st
 
     except Exception as e:
         raise RuntimeError(f"Failed to fetch user written blogs: {e}") from e
+
+
+async def get_blog_by_id_tool(input: GetBlogByIdInput, access_token: str) -> GetBlogByIdOutput:
+    """
+    Fetch a single blog post by its blog_id.
+
+    When mode is 'read', the server increments the total read count
+    for both the blog and the author. When mode is 'edit', reads are
+    not incremented. Draft blogs can only be accessed when draft=True.
+
+    Args:
+        input (GetBlogByIdInput): blog_id, draft flag, and access mode.
+        access_token: Bearer token for authentication.
+
+    Returns:
+        GetBlogByIdOutput: The full blog document with author info.
+
+    Raises:
+        RuntimeError: If an unexpected error occurs during the fetch.
+    """
+    try:
+        response = await post(
+            url=f"{get_env_variable('SERVER_URL_FF')}/blog/get-blog",
+            json={
+                "blog_id": input.blog_id,
+                "draft": input.draft,
+                "mode": input.mode,
+            },
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+        )
+
+        data = response.json()
+
+        return GetBlogByIdOutput(success=True, **data)
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to fetch blog by id: {e}") from e
+
+
+async def search_blogs_tool(input: SearchBlogsInput, access_token: str) -> SearchBlogsOutput:
+    """
+    Search published blogs by tag, title query, or author.
+
+    Supports pagination and an optional blog_id to exclude from results
+    (useful when showing related posts on a currently open blog).
+
+    Args:
+        input (SearchBlogsInput): Search filters, pagination, and limit.
+        access_token: Bearer token for authentication.
+
+    Returns:
+        SearchBlogsOutput: The list of matching blog posts.
+
+    Raises:
+        RuntimeError: If an unexpected error occurs during the search.
+    """
+    try:
+        body: dict = {"page": input.page}
+
+        if input.tag is not None:
+            body["tag"] = input.tag
+        if input.query is not None:
+            body["query"] = input.query
+        if input.author is not None:
+            body["author"] = input.author
+        if input.limit is not None:
+            body["limit"] = input.limit
+        if input.eliminate_blog is not None:
+            body["eliminate_blog"] = input.eliminate_blog
+
+        response = await post(
+            url=f"{get_env_variable('SERVER_URL_FF')}/blog/search-blogs",
+            json=body,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+        )
+
+        data = response.json()
+
+        blogs = [SearchBlogItem(**b) for b in data.get("blogs", [])]
+
+        return SearchBlogsOutput(
+            success=True,
+            message=f"Found {len(blogs)} blog(s).",
+            blogs=blogs,
+        )
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to search blogs: {e}") from e

@@ -2,10 +2,12 @@ from fastmcp import FastMCP
 from dotenv import load_dotenv
 import mcp
 from Tools.get_blog import get_blog
-from Tools.blog_tools import save_to_draft_tool, user_written_blogs_tool
+from Tools.blog_tools import save_to_draft_tool, user_written_blogs_tool, get_blog_by_id_tool, search_blogs_tool
 from Tools.user_tools import get_user_profile_tool, update_profile_tool, check_notification_tool
 from schemas.blog.draft import SaveDraftInput, SaveDraftOutput
 from schemas.blog.user_written_blogs import UserWrittenBlogsInput, UserWrittenBlogsOutput
+from schemas.blog.get_blog_by_id import GetBlogByIdInput, GetBlogByIdOutput
+from schemas.blog.search_blogs import SearchBlogsInput, SearchBlogsOutput
 from schemas.user.profile import UpdateProfileInput, UpdateProfileOutput
 
 load_dotenv()
@@ -66,7 +68,7 @@ async def accept_check_notification_tool(access_token: str):
         return {"new_notification": False, "error": str(e)}
 
 
-@app.tool(name="user_written_blogs", description="Fetch paginated list of blogs written by the authenticated user, with optional title search and draft filtering.")
+@app.tool(name="get_user_written_blogs", description="Fetch paginated list of blogs written by the authenticated user, with optional title search and draft filtering.")
 async def accept_user_written_blogs_tool(input: UserWrittenBlogsInput, access_token: str) -> UserWrittenBlogsOutput:
     """Fetch user-written blogs with pagination and search."""
     try:
@@ -76,6 +78,31 @@ async def accept_user_written_blogs_tool(input: UserWrittenBlogsInput, access_to
             success=False,
             message=f"Error fetching user written blogs: {e}",
             docs=[],
+        )
+
+
+@app.tool(name="get_blog_by_id", description="Fetch a single blog post by its unique blog_id. Increments read count unless mode is 'edit'.")
+async def accept_get_blog_by_id_tool(input: GetBlogByIdInput, access_token: str) -> GetBlogByIdOutput:
+    """Get a blog post by its blog_id."""
+    try:
+        return await get_blog_by_id_tool(input, access_token=access_token)
+    except Exception as e:
+        return GetBlogByIdOutput(
+            success=False,
+            message=f"Error fetching blog: {e}",
+        )
+
+
+@app.tool(name="search_blogs", description="Search published blogs by tag, title query, or author with pagination. Supports excluding a specific blog from results.")
+async def accept_search_blogs_tool(input: SearchBlogsInput, access_token: str) -> SearchBlogsOutput:
+    """Search blogs by tag, title, or author."""
+    try:
+        return await search_blogs_tool(input, access_token=access_token)
+    except Exception as e:
+        return SearchBlogsOutput(
+            success=False,
+            message=f"Error searching blogs: {e}",
+            blogs=[],
         )
 
 
