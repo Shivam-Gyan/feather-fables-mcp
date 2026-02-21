@@ -3,15 +3,15 @@
 from config.environment import get_env_variable
 from request.http import get, patch
 from schemas.user.profile import UpdateProfileInput, UpdateProfileOutput
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 import os
 
-os.environ["PORT"] = os.getenv("PORT", "8000")
+# os.environ["PORT"] = os.getenv("PORT", "8000")
 
 
-URL = os.getenv("SERVER_URL_FF","http://localhost:8080/api/v1/mcp") 
-os.environ["SERVER_URL_FF"] = URL + "/api/v1/mcp"
+# URL = os.getenv("SERVER_URL_FF","http://localhost:8080/api/v1/mcp") 
+# os.environ["SERVER_URL_FF"] = URL + "/api/v1/mcp"
 
 async def get_user_profile_tool(access_token: str):
 

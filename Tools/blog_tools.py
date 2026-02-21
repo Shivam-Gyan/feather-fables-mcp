@@ -17,14 +17,14 @@ from schemas.blog.get_blog_by_id import GetBlogByIdInput, GetBlogByIdOutput
 from schemas.blog.search_blogs import SearchBlogsInput, SearchBlogsOutput, SearchBlogItem
 from request.http import post
 
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 import os
 
-os.environ["PORT"] = os.getenv("PORT", "8000")
+# os.environ["PORT"] = os.getenv("PORT", "8000")
 
-URL = os.getenv("SERVER_URL_FF","http://localhost:8080/api/v1/mcp") 
-os.environ["SERVER_URL_FF"] = URL + "/api/v1/mcp"
+# URL = os.getenv("SERVER_URL_FF","http://localhost:8080/api/v1/mcp") 
+# os.environ["SERVER_URL_FF"] = URL + "/api/v1/mcp"
 # This Function use to save the generated blog by Agentic AI to draft in feather fables webserver.
 async def save_to_draft_tool(input: SaveDraftInput,access_token:str) -> SaveDraftOutput:
     """
